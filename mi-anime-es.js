@@ -1,6 +1,6 @@
 /**
  * mi-anime-es - Built from src/mi-anime-es/
- * Generated: 2026-06-20T21:59:26.454Z
+ * Generated: 2026-06-20T22:50:14.732Z
  */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -63,44 +63,61 @@ __export(animeav1_exports, {
   getStreams: () => getStreams,
   name: () => name
 });
-var cheerio = __toESM(require("cheerio"));
-var BASE_URL = "https://animeav1.com";
 var name = "AnimeAV1";
 function getStreams(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL}/catalogo?search=${encodeURIComponent(title)}`;
+      const searchUrl = `https://animeav1.com/catalogo?search=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio.load(searchHtml);
-      const firstResult = $("article a").first();
-      const animeUrl = firstResult.attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstResult = doc.querySelector("article a");
+      if (!firstResult)
+        return streams;
+      const animeUrl = firstResult.getAttribute("href");
       if (!animeUrl)
         return streams;
-      const animePageResp = yield fetch(`${BASE_URL}${animeUrl}`);
+      const animePageResp = yield fetch(`https://animeav1.com${animeUrl}`);
       const animeHtml = yield animePageResp.text();
-      const $$ = cheerio.load(animeHtml);
-      const scriptContent = $$("script").html() || "";
-      const slugMatch = scriptContent.match(/slug:"([^"]+)"/);
-      const episodesMatch = scriptContent.match(/episodesCount:(\d+)/);
-      if (!slugMatch || !episodesMatch)
+      const animeDoc = new DOMParser().parseFromString(animeHtml, "text/html");
+      const scripts = animeDoc.querySelectorAll("script");
+      let slug = null;
+      let totalEpisodes = 0;
+      for (const script of scripts) {
+        const content = script.textContent || "";
+        const slugMatch = content.match(/slug:"([^"]+)"/);
+        if (slugMatch)
+          slug = slugMatch[1];
+        const episodesMatch = content.match(/episodesCount:(\d+)/);
+        if (episodesMatch)
+          totalEpisodes = parseInt(episodesMatch[1]);
+        if (slug && totalEpisodes > 0)
+          break;
+      }
+      if (!slug || totalEpisodes === 0)
         return streams;
-      const slug = slugMatch[1];
-      const totalEpisodes = parseInt(episodesMatch[1]);
       if (type === "series") {
         if (episode > totalEpisodes)
           return streams;
-        const episodeUrl = `${BASE_URL}/media/${slug}/${episode}`;
+        const episodeUrl = `https://animeav1.com/media/${slug}/${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$$ = cheerio.load(epHtml);
-        let videoSrc = $$$("video source").attr("src");
+        const epDoc = new DOMParser().parseFromString(epHtml, "text/html");
+        let videoSrc = null;
+        const videoElement = epDoc.querySelector("video source");
+        if (videoElement)
+          videoSrc = videoElement.getAttribute("src");
         if (!videoSrc) {
-          const scripts = $$$("script").html() || "";
-          const match = scripts.match(/file:"([^"]+\.m3u8)"/);
-          if (match)
-            videoSrc = match[1];
+          const scripts2 = epDoc.querySelectorAll("script");
+          for (const script of scripts2) {
+            const content = script.textContent || "";
+            const match = content.match(/file:"([^"]+\.m3u8)"/);
+            if (match) {
+              videoSrc = match[1];
+              break;
+            }
+          }
         }
         if (videoSrc) {
           streams.push({
@@ -110,17 +127,20 @@ function getStreams(tmdbId, type, title, year, season, episode) {
           });
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL}/media/${slug}`;
+        const movieUrl = `https://animeav1.com/media/${slug}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$$$ = cheerio.load(movieHtml);
-        const videoSrc = $$$$("video source").attr("src");
-        if (videoSrc) {
-          streams.push({
-            name: "AnimeAV1 - Pel\xEDcula",
-            url: videoSrc,
-            quality: "HD"
-          });
+        const movieDoc = new DOMParser().parseFromString(movieHtml, "text/html");
+        const videoElement = movieDoc.querySelector("video source");
+        if (videoElement) {
+          const videoSrc = videoElement.getAttribute("src");
+          if (videoSrc) {
+            streams.push({
+              name: "AnimeAV1 - Pel\xEDcula",
+              url: videoSrc,
+              quality: "HD"
+            });
+          }
         }
       }
     } catch (e) {
@@ -136,29 +156,35 @@ __export(animeflv_exports, {
   getStreams: () => getStreams2,
   name: () => name2
 });
-var cheerio2 = __toESM(require("cheerio"));
-var BASE_URL2 = "https://www3.animeflv.net";
 var name2 = "AnimeFLV";
 function getStreams2(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL2}/browse?q=${encodeURIComponent(title)}`;
+      const searchUrl = `https://www3.animeflv.net/browse?q=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio2.load(searchHtml);
-      const firstLink = $('a[href*="/anime/"]').first().attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstLink = doc.querySelector('a[href*="/anime/"]');
       if (!firstLink)
         return streams;
-      const animeId = firstLink.split("/").pop();
+      const animeUrl = firstLink.getAttribute("href");
+      if (!animeUrl)
+        return streams;
+      const animeId = animeUrl.split("/").pop();
       if (type === "series") {
-        const episodeUrl = `${BASE_URL2}/ver/${animeId}/${episode}`;
+        const episodeUrl = `https://www3.animeflv.net/ver/${animeId}/${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$ = cheerio2.load(epHtml);
-        let iframeSrc = $$("iframe#player").attr("src");
+        const epDoc = new DOMParser().parseFromString(epHtml, "text/html");
+        let iframeSrc = null;
+        const iframe = epDoc.querySelector("iframe#player");
+        if (iframe)
+          iframeSrc = iframe.getAttribute("src");
         if (!iframeSrc) {
-          iframeSrc = $$(".player iframe").attr("src");
+          const iframe2 = epDoc.querySelector(".player iframe");
+          if (iframe2)
+            iframeSrc = iframe2.getAttribute("src");
         }
         if (iframeSrc) {
           streams.push({
@@ -168,17 +194,20 @@ function getStreams2(tmdbId, type, title, year, season, episode) {
           });
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL2}/ver/${animeId}`;
+        const movieUrl = `https://www3.animeflv.net/ver/${animeId}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$ = cheerio2.load(movieHtml);
-        const iframeSrc = $$("iframe#player").attr("src");
-        if (iframeSrc) {
-          streams.push({
-            name: "AnimeFLV - Pel\xEDcula",
-            url: iframeSrc,
-            quality: "HD"
-          });
+        const movieDoc = new DOMParser().parseFromString(movieHtml, "text/html");
+        const iframe = movieDoc.querySelector("iframe#player");
+        if (iframe) {
+          const iframeSrc = iframe.getAttribute("src");
+          if (iframeSrc) {
+            streams.push({
+              name: "AnimeFLV - Pel\xEDcula",
+              url: iframeSrc,
+              quality: "HD"
+            });
+          }
         }
       }
     } catch (e) {
@@ -194,46 +223,53 @@ __export(animejl_exports, {
   getStreams: () => getStreams3,
   name: () => name3
 });
-var cheerio3 = __toESM(require("cheerio"));
-var BASE_URL3 = "https://animejl.net";
 var name3 = "AnimeJL";
 function getStreams3(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL3}/buscar?q=${encodeURIComponent(title)}`;
+      const searchUrl = `https://animejl.net/buscar?q=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio3.load(searchHtml);
-      const firstLink = $('a[href*="/anime/"]').first().attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstLink = doc.querySelector('a[href*="/anime/"]');
       if (!firstLink)
         return streams;
-      const animeSlug = firstLink.split("/").pop();
+      const animeUrl = firstLink.getAttribute("href");
+      if (!animeUrl)
+        return streams;
+      const animeSlug = animeUrl.split("/").pop();
       if (type === "series") {
-        const episodeUrl = `${BASE_URL3}/ver/${animeSlug}/${episode}`;
+        const episodeUrl = `https://animejl.net/ver/${animeSlug}/${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$ = cheerio3.load(epHtml);
-        const videoSrc = $$("video source").attr("src");
-        if (videoSrc) {
-          streams.push({
-            name: `AnimeJL - T${season}E${episode}`,
-            url: videoSrc,
-            quality: "HD"
-          });
+        const epDoc = new DOMParser().parseFromString(epHtml, "text/html");
+        const videoElement = epDoc.querySelector("video source");
+        if (videoElement) {
+          const videoSrc = videoElement.getAttribute("src");
+          if (videoSrc) {
+            streams.push({
+              name: `AnimeJL - T${season}E${episode}`,
+              url: videoSrc,
+              quality: "HD"
+            });
+          }
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL3}/ver/${animeSlug}`;
+        const movieUrl = `https://animejl.net/ver/${animeSlug}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$ = cheerio3.load(movieHtml);
-        const videoSrc = $$("video source").attr("src");
-        if (videoSrc) {
-          streams.push({
-            name: "AnimeJL - Pel\xEDcula",
-            url: videoSrc,
-            quality: "HD"
-          });
+        const movieDoc = new DOMParser().parseFromString(movieHtml, "text/html");
+        const videoElement = movieDoc.querySelector("video source");
+        if (videoElement) {
+          const videoSrc = videoElement.getAttribute("src");
+          if (videoSrc) {
+            streams.push({
+              name: "AnimeJL - Pel\xEDcula",
+              url: videoSrc,
+              quality: "HD"
+            });
+          }
         }
       }
     } catch (e) {
@@ -249,46 +285,53 @@ __export(latanime_exports, {
   getStreams: () => getStreams4,
   name: () => name4
 });
-var cheerio4 = __toESM(require("cheerio"));
-var BASE_URL4 = "https://latanime.org";
 var name4 = "LatAnime";
 function getStreams4(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL4}/buscar?q=${encodeURIComponent(title)}`;
+      const searchUrl = `https://latanime.org/buscar?q=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio4.load(searchHtml);
-      const firstResult = $('a[href*="/anime/"]').first().attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstResult = doc.querySelector('a[href*="/anime/"]');
       if (!firstResult)
         return streams;
-      const animeSlug = firstResult.split("/").pop();
+      const animeUrl = firstResult.getAttribute("href");
+      if (!animeUrl)
+        return streams;
+      const animeSlug = animeUrl.split("/").pop();
       if (type === "series") {
-        const episodeUrl = `${BASE_URL4}/ver/${animeSlug}/capitulo-${episode}`;
+        const episodeUrl = `https://latanime.org/ver/${animeSlug}/capitulo-${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$ = cheerio4.load(epHtml);
-        const videoSrc = $$("video source").attr("src");
-        if (videoSrc) {
-          streams.push({
-            name: `LatAnime - T${season}E${episode}`,
-            url: videoSrc,
-            quality: "HD"
-          });
+        const epDoc = new DOMParser().parseFromString(epHtml, "text/html");
+        const videoElement = epDoc.querySelector("video source");
+        if (videoElement) {
+          const videoSrc = videoElement.getAttribute("src");
+          if (videoSrc) {
+            streams.push({
+              name: `LatAnime - T${season}E${episode}`,
+              url: videoSrc,
+              quality: "HD"
+            });
+          }
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL4}/ver/${animeSlug}`;
+        const movieUrl = `https://latanime.org/ver/${animeSlug}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$ = cheerio4.load(movieHtml);
-        const videoSrc = $$("video source").attr("src");
-        if (videoSrc) {
-          streams.push({
-            name: "LatAnime - Pel\xEDcula",
-            url: videoSrc,
-            quality: "HD"
-          });
+        const movieDoc = new DOMParser().parseFromString(movieHtml, "text/html");
+        const videoElement = movieDoc.querySelector("video source");
+        if (videoElement) {
+          const videoSrc = videoElement.getAttribute("src");
+          if (videoSrc) {
+            streams.push({
+              name: "LatAnime - Pel\xEDcula",
+              url: videoSrc,
+              quality: "HD"
+            });
+          }
         }
       }
     } catch (e) {
@@ -304,49 +347,54 @@ __export(sololatino_exports, {
   getStreams: () => getStreams5,
   name: () => name5
 });
-var cheerio5 = __toESM(require("cheerio"));
-var BASE_URL5 = "https://sololatino.net";
 var name5 = "SoloLatino";
 function getStreams5(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
-    var _a;
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL5}/buscar?q=${encodeURIComponent(title)}`;
+      const searchUrl = `https://sololatino.net/buscar?q=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio5.load(searchHtml);
-      const firstResult = $('a[href*="/ver/"]').first().attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstResult = doc.querySelector('a[href*="/ver/"]');
       if (!firstResult)
         return streams;
-      const contentId = (_a = firstResult.match(/\/(\d+)-/)) == null ? void 0 : _a[1];
-      if (!contentId)
+      const href = firstResult.getAttribute("href");
+      const contentIdMatch = href.match(/\/(\d+)-/);
+      if (!contentIdMatch)
         return streams;
+      const contentId = contentIdMatch[1];
       if (type === "series") {
-        const episodeUrl = `${BASE_URL5}/ver/serie/${contentId}-${title.replace(/ /g, "-")}?temporada=${season}&capitulo=${episode}`;
+        const episodeUrl = `https://sololatino.net/ver/serie/${contentId}-${title.replace(/ /g, "-")}?temporada=${season}&capitulo=${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$ = cheerio5.load(epHtml);
-        const iframeSrc = $$("iframe[allowfullscreen]").attr("src");
-        if (iframeSrc) {
-          streams.push({
-            name: `SoloLatino - T${season}E${episode}`,
-            url: iframeSrc,
-            quality: "HD"
-          });
+        const epDoc = new DOMParser().parseFromString(epHtml, "text/html");
+        const iframe = epDoc.querySelector("iframe[allowfullscreen]");
+        if (iframe) {
+          const iframeSrc = iframe.getAttribute("src");
+          if (iframeSrc) {
+            streams.push({
+              name: `SoloLatino - T${season}E${episode}`,
+              url: iframeSrc,
+              quality: "HD"
+            });
+          }
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL5}/ver/pelicula/${contentId}-${title.replace(/ /g, "-")}`;
+        const movieUrl = `https://sololatino.net/ver/pelicula/${contentId}-${title.replace(/ /g, "-")}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$ = cheerio5.load(movieHtml);
-        const iframeSrc = $$("iframe[allowfullscreen]").attr("src");
-        if (iframeSrc) {
-          streams.push({
-            name: "SoloLatino - Pel\xEDcula",
-            url: iframeSrc,
-            quality: "HD"
-          });
+        const movieDoc = new DOMParser().parseFromString(movieHtml, "text/html");
+        const iframe = movieDoc.querySelector("iframe[allowfullscreen]");
+        if (iframe) {
+          const iframeSrc = iframe.getAttribute("src");
+          if (iframeSrc) {
+            streams.push({
+              name: "SoloLatino - Pel\xEDcula",
+              url: iframeSrc,
+              quality: "HD"
+            });
+          }
         }
       }
     } catch (e) {
@@ -362,18 +410,18 @@ __export(seriesmetro_exports, {
   getStreams: () => getStreams6,
   name: () => name6
 });
-var cheerio6 = __toESM(require("cheerio"));
-var BASE_URL6 = "https://seriesmetro.net";
+var cheerio = __toESM(require("cheerio"));
+var BASE_URL = "https://seriesmetro.net";
 var name6 = "SeriesMetro";
 function getStreams6(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     var _a;
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL6}/search/${encodeURIComponent(title)}`;
+      const searchUrl = `${BASE_URL}/search/${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio6.load(searchHtml);
+      const $ = cheerio.load(searchHtml);
       const firstResult = $('a[href*="/ver/"]').first().attr("href");
       if (!firstResult)
         return streams;
@@ -381,10 +429,10 @@ function getStreams6(tmdbId, type, title, year, season, episode) {
       if (!contentId)
         return streams;
       if (type === "series") {
-        const episodeUrl = `${BASE_URL6}/ver/${contentId}-${title.replace(/ /g, "-")}?temporada=${season}&capitulo=${episode}`;
+        const episodeUrl = `${BASE_URL}/ver/${contentId}-${title.replace(/ /g, "-")}?temporada=${season}&capitulo=${episode}`;
         const epResp = yield fetch(episodeUrl);
         const epHtml = yield epResp.text();
-        const $$ = cheerio6.load(epHtml);
+        const $$ = cheerio.load(epHtml);
         const videoSrc = $$("video source").attr("src");
         if (videoSrc) {
           streams.push({
@@ -394,10 +442,10 @@ function getStreams6(tmdbId, type, title, year, season, episode) {
           });
         }
       } else if (type === "movie") {
-        const movieUrl = `${BASE_URL6}/ver/${contentId}`;
+        const movieUrl = `${BASE_URL}/ver/${contentId}`;
         const movieResp = yield fetch(movieUrl);
         const movieHtml = yield movieResp.text();
-        const $$ = cheerio6.load(movieHtml);
+        const $$ = cheerio.load(movieHtml);
         const videoSrc = $$("video source").attr("src");
         if (videoSrc) {
           streams.push({
@@ -420,36 +468,39 @@ __export(cinecalidad_exports, {
   getStreams: () => getStreams7,
   name: () => name7
 });
-var cheerio7 = __toESM(require("cheerio"));
-var BASE_URL7 = "https://cinecalidad.fun";
 var name7 = "Cinecalidad";
 function getStreams7(tmdbId, type, title, year, season, episode) {
   return __async(this, null, function* () {
     const streams = [];
     try {
-      const searchUrl = `${BASE_URL7}/?s=${encodeURIComponent(title)}`;
+      const searchUrl = `https://cinecalidad.fun/?s=${encodeURIComponent(title)}`;
       const searchResp = yield fetch(searchUrl);
       const searchHtml = yield searchResp.text();
-      const $ = cheerio7.load(searchHtml);
-      const firstResult = $('a[href*="/pelicula/"]').first().attr("href");
+      const doc = new DOMParser().parseFromString(searchHtml, "text/html");
+      const firstResult = doc.querySelector('a[href*="/pelicula/"]');
       if (!firstResult)
         return streams;
-      const movieSlug = firstResult.split("/").pop();
+      const movieUrl = firstResult.getAttribute("href");
+      if (!movieUrl)
+        return streams;
+      const movieSlug = movieUrl.split("/").pop();
       if (type === "movie") {
-        const movieUrl = `${BASE_URL7}/pelicula/${movieSlug}`;
-        const movieResp = yield fetch(movieUrl);
-        const movieHtml = yield movieResp.text();
-        const $$ = cheerio7.load(movieHtml);
-        const iframeSrc = $$('iframe[src*="player"]').attr("src") || $$('iframe[src*="drive"]').attr("src");
-        if (iframeSrc) {
-          streams.push({
-            name: "Cinecalidad - Pel\xEDcula",
-            url: iframeSrc,
-            quality: "HD"
-          });
+        const moviePageResp = yield fetch(movieUrl);
+        const moviePageHtml = yield moviePageResp.text();
+        const movieDoc = new DOMParser().parseFromString(moviePageHtml, "text/html");
+        const iframe = movieDoc.querySelector('iframe[src*="player"]') || movieDoc.querySelector('iframe[src*="drive"]');
+        if (iframe) {
+          const iframeSrc = iframe.getAttribute("src");
+          if (iframeSrc) {
+            streams.push({
+              name: "Cinecalidad - Pel\xEDcula",
+              url: iframeSrc,
+              quality: "HD"
+            });
+          }
         }
       } else if (type === "series") {
-        const seriesUrl = `${BASE_URL7}/serie/${movieSlug}`;
+        console.log("Cinecalidad no soporta series directamente.");
       }
     } catch (e) {
       console.error("Error en Cinecalidad:", e.message);
