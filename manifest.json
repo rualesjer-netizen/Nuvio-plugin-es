@@ -1,9 +1,83 @@
 {
-  "id": "mi-anime-es",
-  "version": "1.0.0",
   "name": "Mi Plugin Anime ES",
-  "description": "Busca streams en AnimeAV1, AnimeFLV, AnimeJL, LatAnime, SoloLatino, SeriesMetro y Cinecalidad.",
-  "resources": ["stream"],
-  "types": ["movie", "series"],
-  "idPrefixes": ["tt"]
+  "version": "1.0.0",
+  "scrapers": [
+    {
+      "id": "animeav1",
+      "name": "AnimeAV1",
+      "description": "Streams desde AnimeAV1",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "animeflv",
+      "name": "AnimeFLV",
+      "description": "Streams desde AnimeFLV",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "animejl",
+      "name": "AnimeJL",
+      "description": "Streams desde AnimeJL",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "latanime",
+      "name": "LatAnime",
+      "description": "Streams desde LatAnime",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "sololatino",
+      "name": "SoloLatino",
+      "description": "Streams desde SoloLatino",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "seriesmetro",
+      "name": "SeriesMetro",
+      "description": "Streams desde SeriesMetro",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    },
+    {
+      "id": "cinecalidad",
+      "name": "Cinecalidad",
+      "description": "Streams desde Cinecalidad",
+      "version": "1.0.0",
+      "author": "rualesjer-netizen",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "mi-anime-es.js",
+      "enabled": true,
+      "contentLanguage": ["es"]
+    }
+  ]
 }
