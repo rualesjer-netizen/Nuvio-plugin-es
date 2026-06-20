@@ -7,10 +7,12 @@
       "name": "AnimeAV1",
       "description": "Streams desde AnimeAV1",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/animeav1.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -18,10 +20,12 @@
       "name": "AnimeFLV",
       "description": "Streams desde AnimeFLV",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/animeflv.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -29,10 +33,12 @@
       "name": "AnimeJL",
       "description": "Streams desde AnimeJL",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/animejl.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -40,10 +46,12 @@
       "name": "LatAnime",
       "description": "Streams desde LatAnime",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/latanime.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -51,10 +59,12 @@
       "name": "SoloLatino",
       "description": "Streams desde SoloLatino",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/sololatino.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -62,10 +72,12 @@
       "name": "SeriesMetro",
       "description": "Streams desde SeriesMetro",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/seriesmetro.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     },
     {
@@ -73,10 +85,12 @@
       "name": "Cinecalidad",
       "description": "Streams desde Cinecalidad",
       "version": "1.0.0",
-      "author": "rualesjer-netizen",
+      "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
-      "filename": "mi-anime-es.js",
+      "filename": "providers/cinecalidad.js",
       "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "",
       "contentLanguage": ["es"]
     }
   ]
