@@ -1,82 +1,93 @@
 // providers/animeav1.js
-export const name = 'AnimeAV1';
 
 const BASE = 'https://animeav1.com';
 const HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Referer': `${BASE}/`,
+    'Referer': BASE + '/',
 };
 
 async function search(title) {
-    const html = await fetch(`${BASE}/catalogo?search=${encodeURIComponent(title)}`, { headers: HEADERS }).then(r => r.text());
-    // Resultados en formato: /media/slug
-    return html.match(/href="(\/media\/[^"/]+)"/)?.[1] || null;
+    try {
+        const response = await fetch(BASE + '/catalogo?search=' + encodeURIComponent(title), { headers: HEADERS });
+        const html = await response.text();
+        const match = html.match(/href="(\/media\/[^"/]+)"/);
+        return match ? match[1] : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function getPlayerUrl(episodeUrl) {
-    const html = await fetch(episodeUrl, { headers: HEADERS }).then(r => r.text());
-    // Player directo en el HTML: https://player.zilla-networks.com/play/HASH
-    return html.match(/https:\/\/player\.zilla-networks\.com\/play\/[a-f0-9]+/)?.[0] || null;
+    try {
+        const response = await fetch(episodeUrl, { headers: HEADERS });
+        const html = await response.text();
+        const match = html.match(/https:\/\/player\.zilla-networks\.com\/play\/[a-f0-9]+/);
+        return match ? match[0] : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function getM3u8FromZilla(playerUrl) {
-    const headers = {
-        ...HEADERS,
-        'Referer': `${BASE}/`,
-    };
-    const html = await fetch(playerUrl, { headers }).then(r => r.text());
+    try {
+        const headers = { ...HEADERS, 'Referer': BASE + '/' };
+        const response = await fetch(playerUrl, { headers: headers });
+        const html = await response.text();
 
-    // Zilla expone el m3u8 en el HTML del player
-    return html.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)/)?.[1]
-        || html.match(/"src"\s*:\s*"([^"]+\.m3u8[^"]*)"/)?.[1]
-        || html.match(/source\s*:\s*["']([^"']+\.m3u8[^"']*)/)?.[1]
-        || html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/)?.[1]
-        || null;
+        const m3u8Match = html.match(/file\s*:\s*["']([^"']+\.m3u8[^"']*)/)
+            || html.match(/"src"\s*:\s*"([^"]+\.m3u8[^"]*)"/)
+            || html.match(/source\s*:\s*["']([^"']+\.m3u8[^"']*)/)
+            || html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/);
+
+        return m3u8Match ? m3u8Match[1] : null;
+    } catch (e) {
+        return null;
+    }
 }
 
-export async function getStreams(tmdbId, mediaType, season, episode, meta = {}) {
-    const { title } = meta;
+// Cambiamos los exports modernos por la asignación directa que Nuvio reconoce
+async function getStreams(tmdbId, mediaType, season, episode, meta) {
+    const title = meta && meta.title ? meta.title : null;
     if (!title) {
-        console.warn('[AnimeAV1] Sin título, abortando');
         return [];
     }
 
     try {
         // 1. Buscar anime
         const animePath = await search(title);
-        if (!animePath) {
-            console.warn(`[AnimeAV1] Sin resultados para: ${title}`);
-            return [];
-        }
+        if (!animePath) return [];
 
         // 2. Construir URL del episodio
-        // AnimeAV1 no maneja temporadas, solo número de episodio global
         const episodeUrl = mediaType === 'tv'
-            ? `${BASE}${animePath}/${episode}`
-            : `${BASE}${animePath}`; // películas/OVAs sin número
+            ? BASE + animePath + '/' + episode
+            : BASE + animePath;
 
-        // 3. Obtener URL del player zilla-networks
+        // 3. Obtener URL del player
         const playerUrl = await getPlayerUrl(episodeUrl);
-        if (!playerUrl) {
-            console.warn('[AnimeAV1] No se encontró player URL en:', episodeUrl);
-            return [];
-        }
+        if (!playerUrl) return [];
 
-        // 4. Extraer m3u8 del player
+        // 4. Extraer m3u8
         const m3u8Url = await getM3u8FromZilla(playerUrl);
-        if (!m3u8Url) {
-            console.warn('[AnimeAV1] No se pudo extraer m3u8 del player:', playerUrl);
-            return [];
-        }
+        if (!m3u8Url) return [];
 
         const streamName = mediaType === 'tv'
-            ? `AnimeAV1 · E${episode}`
-            : `AnimeAV1 · OVA/Movie`;
+            ? 'AnimeAV1 · E' + episode
+            : 'AnimeAV1 · OVA/Movie';
 
-        return [{ name: streamName, url: m3u8Url, quality: 'HD' }];
+        // Retorna el array con el formato que Nuvio mapea en "Test Provider"
+        return [{ 
+            name: streamName, 
+            url: m3u8Url, 
+            quality: 'HD' 
+        }];
 
     } catch (err) {
-        console.error('[AnimeAV1] Error:', err.message);
         return [];
     }
 }
+
+// Exportación compatible con CommonJS/Nuvio
+module.exports = {
+    name: 'AnimeAV1',
+    getStreams: getStreams
+};
