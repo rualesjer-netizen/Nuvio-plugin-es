@@ -464,15 +464,40 @@ export async function getStreams(tmdbId, mediaType, season, episode, meta = {}) 
             let videoUrl = await getDirectStream(id, token, cookie, playerUrl);
             if (!videoUrl) return null;
 
-            // Intentar resolver embed (VOE, StreamWish, Filemoon, etc.)
-            const resolved = await resolveEmbed(videoUrl);
-            const finalUrl = resolved?.url || videoUrl;
-            const quality = resolved?.quality || 'HD';
-            const headers = resolved?.headers || { 'User-Agent': UA, 'Referer': playerUrl };
+            let finalUrl = videoUrl;
+            let quality = 'HD';
+            let headers = { 'User-Agent': UA, 'Referer': playerUrl };
+            let resolvedServerName = serverName;
+
+            // Mediafire: seguir redirect y usar URL directa
+            if (videoUrl.includes('mediafire.com')) {
+                try {
+                    const headRes = await fetch(videoUrl, {
+                        method: 'HEAD',
+                        headers: { 'User-Agent': UA },
+                        redirect: 'follow',
+                    });
+                    finalUrl = headRes.url || videoUrl;
+                    // .bin de mediafire = video directo, agregar #.mp4 para que Nuvio lo reconozca
+                    if (finalUrl.endsWith('.bin')) finalUrl = finalUrl + '#.mp4';
+                    quality = '1080p';
+                    resolvedServerName = 'Mediafire';
+                    headers = { 'User-Agent': UA, 'Referer': 'https://www.mediafire.com/' };
+                } catch {
+                    finalUrl = videoUrl + '#.mp4';
+                }
+            } else {
+                // Intentar resolver embed (VOE, StreamWish, Filemoon, etc.)
+                const resolved = await resolveEmbed(videoUrl);
+                finalUrl = resolved?.url || videoUrl;
+                quality = resolved?.quality || 'HD';
+                headers = resolved?.headers || { 'User-Agent': UA, 'Referer': playerUrl };
+                resolvedServerName = resolved?.serverName || serverName;
+            }
 
             const streamName = mediaType === 'tv'
-                ? `SoloLatino · T${season}E${episode} [${lang}] - ${resolved?.serverName || serverName}`
-                : `SoloLatino · Película [${lang}] - ${resolved?.serverName || serverName}`;
+                ? `SoloLatino · T${season}E${episode} [${lang}] - ${resolvedServerName}`
+                : `SoloLatino · Película [${lang}] - ${resolvedServerName}`;
 
             return { name: streamName, url: finalUrl, quality, headers };
         }));
