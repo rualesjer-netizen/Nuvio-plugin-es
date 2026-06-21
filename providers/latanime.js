@@ -1,10 +1,9 @@
 // providers/latanime.js
-export const name = 'LatAnime';
 
 const BASE = 'https://latanime.org';
 const HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Referer': `${BASE}/`,
+    'Referer': BASE + '/',
 };
 
 function slugify(title) {
@@ -17,95 +16,112 @@ function slugify(title) {
 }
 
 async function searchAnime(title) {
-    const html = await fetch(`${BASE}/animes?buscar=${encodeURIComponent(title)}`, { headers: HEADERS }).then(r => r.text());
-    // Resultados en /anime/slug
-    return html.match(/href="(\/anime\/[^"]+)"/)?.[1] || null;
+    try {
+        const response = await fetch(BASE + '/animes?buscar=' + encodeURIComponent(title), { headers: HEADERS });
+        const html = await response.text();
+        const match = html.match(/href="(\/anime\/[^"]+)"/);
+        return match ? match[1] : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function getEpisodeSlug(animePath, episode) {
-    // Obtener la página del anime para sacar el slug del episodio
-    const html = await fetch(`${BASE}${animePath}`, { headers: HEADERS }).then(r => r.text());
-    // Episodios en formato: /ver/slug-episodio-N
-    const epLinks = [...html.matchAll(/href="(\/ver\/[^"]+episodio-(\d+)[^"]*)"/g)];
-    const epLink = epLinks.find(m => parseInt(m[2]) === episode);
-    return epLink?.[1] || null;
+    try {
+        const response = await fetch(BASE + animePath, { headers: HEADERS });
+        const html = await response.text();
+        
+        // Expresión regular tradicional para iterar de manera segura sin usar matchAll
+        const regex = /href="(\/ver\/[^"]+episodio-(\d+)[^"]*)"/g;
+        let match;
+        
+        while ((match = regex.exec(html)) !== null) {
+            if (parseInt(match[2], 10) === episode) {
+                return match[1];
+            }
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function getVideoFromMp4upload(mp4uploadUrl) {
-    // mp4upload tiene su propio embed — extraer el mp4 directo
-    const embedUrl = mp4uploadUrl.replace('mp4upload.com/embed-', 'mp4upload.com/').replace('.html', '');
-    const html = await fetch(mp4uploadUrl, {
-        headers: { ...HEADERS, 'Referer': BASE }
-    }).then(r => r.text());
+    try {
+        const headers = { ...HEADERS, 'Referer': BASE };
+        const response = await fetch(mp4uploadUrl, { headers: headers });
+        const html = await response.text();
 
-    return html.match(/"file"\s*:\s*"([^"]+\.mp4[^"]*)"/)?.[1]
-        || html.match(/src\s*:\s*["']([^"']+\.mp4[^"']*)/)?.[1]
-        || html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/)?.[1]
-        || null;
+        const match = html.match(/"file"\s*:\s*"([^"]+\.mp4[^"]*)"/)
+            || html.match(/src\s*:\s*["']([^"']+\.mp4[^"']*)/)
+            || html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/);
+
+        return match ? match[1] : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function getEpisodeStreams(episodePath) {
-    const html = await fetch(`${BASE}${episodePath}`, { headers: HEADERS }).then(r => r.text());
+    try {
+        const response = await fetch(BASE + episodePath, { headers: HEADERS });
+        const html = await response.text();
 
-    // LatAnime carga los servidores con JS/AJAX usando CSRF token
-    // Intentar extraer directamente cualquier URL de video del HTML
-    const mp4Match = html.match(/(https?:\/\/[^"'\s]*mp4upload[^"'\s]+)/);
-    if (mp4Match) return mp4Match[1];
+        const mp4Match = html.match(/(https?:\/\/[^"'\s]*mp4upload[^"'\s]+)/);
+        if (mp4Match) return mp4Match[1];
 
-    // Buscar iframe de mp4upload
-    const iframeMatch = html.match(/src="(https?:\/\/[^"]*mp4upload[^"]+)"/);
-    if (iframeMatch) {
-        return await getVideoFromMp4upload(iframeMatch[1]);
+        const iframeMatch = html.match(/src="(https?:\/\/[^"]*mp4upload[^"]+)"/);
+        if (iframeMatch) {
+            return await getVideoFromMp4upload(iframeMatch[1]);
+        }
+
+        const directMp4Match = html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/);
+        return directMp4Match ? directMp4Match[1] : null;
+    } catch (e) {
+        return null;
     }
-
-    // Buscar cualquier .mp4 directo
-    return html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/)?.[1] || null;
 }
 
-export async function getStreams(tmdbId, mediaType, season, episode, meta = {}) {
-    const { title } = meta;
+async function getStreams(tmdbId, mediaType, season, episode, meta) {
+    const title = meta && meta.title ? meta.title : null;
     if (!title) {
-        console.warn('[LatAnime] Sin título, abortando');
         return [];
     }
 
     try {
         // 1. Buscar anime
         const animePath = await searchAnime(title);
-        if (!animePath) {
-            console.warn(`[LatAnime] Sin resultados para: ${title}`);
-            return [];
-        }
+        if (!animePath) return [];
 
-        // 2. Obtener slug del episodio desde la página del anime
+        // 2. Obtener slug del episodio
         let episodePath;
         if (mediaType === 'tv') {
             episodePath = await getEpisodeSlug(animePath, episode);
             if (!episodePath) {
-                // Fallback: construir slug directo
                 const animeSlug = animePath.replace('/anime/', '');
-                episodePath = `/ver/${animeSlug}-episodio-${episode}`;
-                console.warn(`[LatAnime] Intentando slug directo: ${episodePath}`);
+                episodePath = '/ver/' + animeSlug + '-episodio-' + episode;
             }
         } else {
             episodePath = animePath.replace('/anime/', '/ver/') + '-episodio-1';
         }
 
-        // 3. Obtener stream del episodio
+        // 3. Obtener stream
         const videoUrl = await getEpisodeStreams(episodePath);
-        if (!videoUrl) {
-            console.warn('[LatAnime] No se pudo extraer URL de video');
-            return [];
-        }
+        if (!videoUrl) return [];
 
         const streamName = mediaType === 'tv'
-            ? `LatAnime · E${episode}`
-            : `LatAnime · Película`;
+            ? 'LatAnime · E' + episode
+            : 'LatAnime · Película';
 
         return [{ name: streamName, url: videoUrl, quality: 'HD' }];
 
     } catch (err) {
-        console.error('[LatAnime] Error:', err.message);
         return [];
     }
 }
+
+// Exportación CommonJS requerida por Nuvio
+module.exports = {
+    name: 'LatAnime',
+    getStreams: getStreams
+};
