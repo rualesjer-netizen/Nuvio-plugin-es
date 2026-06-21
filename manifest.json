@@ -2,15 +2,85 @@
   "name": "Rem Provedor ♡",
   "version": "1.0.0",
   "scrapers": [
-    { "id": "animeav1", "name": "AnimeAV1", "filename": "providers/animeav1.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "animeflv", "name": "AnimeFLV", "filename": "providers/animeflv.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "animejl", "name": "AnimeJL", "filename": "providers/animejl.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "latanime", "name": "LatAnime", "filename": "providers/latanime.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "sololatino", "name": "SoloLatino", "filename": "providers/sololatino.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "seriesmetro", "name": "SeriesMetro", "filename": "providers/seriesmetro.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "cinecalidad", "name": "Cinecalidad", "filename": "providers/cinecalidad.js", "enabled": true, "supportedTypes": ["movie"] },
-    { "id": "cuevana", "name": "Cuevana", "filename": "providers/cuevana.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "animeyt", "name": "AnimeYT", "filename": "providers/animeyt.js", "enabled": true, "supportedTypes": ["movie", "tv"] },
-    { "id": "pelisplus", "name": "PelisPlus", "filename": "providers/pelisplus.js", "enabled": true, "supportedTypes": ["movie", "tv"] }
+    {
+      "id": "animeav1",
+      "name": "AnimeAV1",
+      "filename": "providers/animeav1.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "animeflv",
+      "name": "AnimeFLV",
+      "filename": "providers/animeflv.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "animejl",
+      "name": "AnimeJL",
+      "filename": "providers/animejl.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "latanime",
+      "name": "LatAnime",
+      "filename": "providers/latanime.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "sololatino",
+      "name": "SoloLatino",
+      "filename": "providers/sololatino.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "seriesmetro",
+      "name": "SeriesMetro",
+      "filename": "providers/seriesmetro.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "cinecalidad",
+      "name": "Cinecalidad",
+      "filename": "providers/cinecalidad.js",
+      "enabled": true,
+      "supportedTypes": ["movie"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "cuevana",
+      "name": "Cuevana",
+      "filename": "providers/cuevana.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "animeyt",
+      "name": "AnimeYT",
+      "filename": "providers/animeyt.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    },
+    {
+      "id": "pelisplus",
+      "name": "PelisPlus",
+      "filename": "providers/pelisplus.js",
+      "enabled": true,
+      "supportedTypes": ["movie", "tv"],
+      "version": "1.0.0"
+    }
   ]
 }
