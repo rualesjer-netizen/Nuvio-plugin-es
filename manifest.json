@@ -1,97 +1,115 @@
 {
-  "name": "Rem Provedor",
+  "id": "com.rem.provedor",
+  "name": "Rem Provedor ♡",
   "version": "1.0.0",
+  "description": "Streams en español latino desde 7 proveedores: anime, series y películas.",
+  "author": "tu-usuario",
+  "contentLanguage": ["es"],
   "scrapers": [
     {
       "id": "animeav1",
       "name": "AnimeAV1",
-      "description": "Streams desde AnimeAV1",
+      "description": "Anime en español latino desde AnimeAV1",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/animeav1.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://animeav1.com/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "animeflv",
       "name": "AnimeFLV",
-      "description": "Streams desde AnimeFLV",
+      "description": "Anime en español latino desde AnimeFLV",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/animeflv.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://www.animeflv.net/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "animejl",
       "name": "AnimeJL",
-      "description": "Streams desde AnimeJL",
+      "description": "Anime en español latino desde AnimeJL",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/animejl.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://animejl.net/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "latanime",
       "name": "LatAnime",
-      "description": "Streams desde LatAnime",
+      "description": "Anime en español latino desde LatAnime",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/latanime.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://latanime.org/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "sololatino",
       "name": "SoloLatino",
-      "description": "Streams desde SoloLatino",
+      "description": "Series y películas en español latino desde SoloLatino",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/sololatino.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://sololatino.net/images/logo.png",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "seriesmetro",
       "name": "SeriesMetro",
-      "description": "Streams desde SeriesMetro",
+      "description": "Series y películas en español latino desde SeriesMetro",
       "version": "1.0.0",
       "author": "tu-usuario",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/seriesmetro.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://www3.seriesmetro.net/wp-content/uploads/2024/04/cropped-Favicon2-180x180.png",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "cinecalidad",
       "name": "Cinecalidad",
-      "description": "Streams desde Cinecalidad",
+      "description": "Películas en HD (Latino) desde Cinecalidad",
       "version": "1.0.0",
       "author": "tu-usuario",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": ["movie"],
       "filename": "providers/cinecalidad.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "logo": "",
-      "contentLanguage": ["es"]
+      "logo": "https://cinecalidad.fun/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     }
   ]
 }
