@@ -6,49 +6,59 @@ const HEADERS = {
     'Referer': BASE + '/',
 };
 
-function extractVideo(html) {
-    const match = html.match(/<iframe[^>]*id="player"[^>]*src="([^"]+)"/)
-        || html.match(/<iframe[^>]*src="([^"]*(?:player|embed)[^"]*)"[^>]*>/)
-        || html.match(/file\s*:\s*"([^"]+\.m3u8)"/);
-        
-    return match ? match[1] : null;
+function slugify(title) {
+    return title
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
 }
 
 async function getStreams(tmdbId, mediaType, season, episode, meta) {
     const title = meta && meta.title ? meta.title : null;
-    if (!title) {
-        return [];
-    }
+    if (!title) return [];
 
     try {
-        // 1. Buscar anime
-        const responseSearch = await fetch(BASE + '/browse?q=' + encodeURIComponent(title), { headers: HEADERS });
-        const searchHtml = await responseSearch.text();
-        const animeUrlMatch = searchHtml.match(/<a\s+href="(\/anime\/[^"]+)"/);
+        // 1. Intentar resolver por slug directo (método más rápido y efectivo)
+        const animeSlug = slugify(title);
+        let targetUrl = BASE + '/ver/' + animeSlug + '-' + episode;
         
-        if (!animeUrlMatch) {
-            return [];
-        }
-        
-        const animeUrl = animeUrlMatch[1];
-        const urlParts = animeUrl.split('/');
-        const animeId = urlParts[urlParts.length - 1];
-
-        // 2. Construir URL del episodio o película
-        let targetUrl;
-        if (mediaType === 'tv') {
-            targetUrl = BASE + '/ver/' + animeId + '-' + episode;
-        } else {
-            targetUrl = BASE + '/ver/' + animeId;
+        if (mediaType !== 'tv') {
+            targetUrl = BASE + '/ver/' + animeSlug + '-pelicula';
         }
 
-        const responsePage = await fetch(targetUrl, { headers: HEADERS });
-        const pageHtml = await responsePage.text();
-        const videoUrl = extractVideo(pageHtml);
-        
-        if (!videoUrl) {
-            return [];
+        let responsePage = await fetch(targetUrl, { headers: HEADERS });
+        let pageHtml = await responsePage.text();
+
+        // 2. Si el slug directo falla (404), buscar de forma tradicional
+        if (pageHtml.indexOf('404 Not Found') !== -1 || pageHtml.length < 1000) {
+            const responseSearch = await fetch(BASE + '/browse?q=' + encodeURIComponent(title), { headers: HEADERS });
+            const searchHtml = await responseSearch.text();
+            const animeUrlMatch = searchHtml.match(/<a\s+href="\/anime\/([^"]+)"/);
+            
+            if (animeUrlMatch) {
+                const animeId = animeUrlMatch[1];
+                targetUrl = mediaType === 'tv' 
+                    ? BASE + '/ver/' + animeId + '-' + episode 
+                    : BASE + '/ver/' + animeId;
+                
+                responsePage = await fetch(targetUrl, { headers: HEADERS });
+                pageHtml = await responsePage.text();
+            }
         }
+
+        // 3. Extracción robusta de los scripts de video (servidores en la nube)
+        // AnimeFLV guarda la lista de servidores en una variable de JS llamada 'videos'
+        const videoScript = pageHtml.match(/var\s+videos\s*=\s*([^\n;]+)/);
+        if (!videoScript) return [];
+
+        // Extraer enlaces directos de reproductores comunes dentro del texto plano
+        const streamMatch = videoScript[1].match(/(https?:\/\/[^"'\s]*(?:mega|embed|stream|player|mp4upload)[^"'\s]*)/);
+        if (!streamMatch) return [];
+
+        // Limpiar backslashes del JSON si existen
+        const videoUrl = streamMatch[1].replace(/\\/g, '');
 
         const streamName = mediaType === 'tv'
             ? 'AnimeFLV · T' + season + 'E' + episode
@@ -61,7 +71,6 @@ async function getStreams(tmdbId, mediaType, season, episode, meta) {
     }
 }
 
-// Exportación CommonJS requerida por Nuvio
 module.exports = {
     name: 'AnimeFLV',
     getStreams: getStreams
