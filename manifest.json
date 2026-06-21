@@ -1,56 +1,160 @@
 {
-  "name": "Nuvio-plugin-es",
+  "id": "com.rem.provedor",
+  "name": "Rem Provedor ♡",
   "version": "1.0.0",
-  "providers": [
+  "description": "Streams en español latino: anime, series y películas.",
+  "author": "Rem Provedor ♡",
+  "contentLanguage": ["es"],
+  "scrapers": [
     {
       "id": "animeav1",
       "name": "AnimeAV1",
-      "filename": "providers/animeav1.js"
+      "description": "Anime en español latino desde AnimeAV1",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/animeav1.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://animeav1.com/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "animeflv",
       "name": "AnimeFLV",
-      "filename": "providers/animeflv.js"
+      "description": "Anime en español latino desde AnimeFLV",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/animeflv.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://www.animeflv.net/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "animejl",
       "name": "AnimeJL",
-      "filename": "providers/animejl.js"
+      "description": "Anime en español latino desde AnimeJL",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/animejl.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://animejl.net/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "latanime",
       "name": "LatAnime",
-      "filename": "providers/latanime.js"
+      "description": "Anime en español latino desde LatAnime",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/latanime.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://latanime.org/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "sololatino",
       "name": "SoloLatino",
-      "filename": "providers/sololatino.js"
+      "description": "Series y películas en español latino desde SoloLatino",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/sololatino.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://sololatino.net/images/logo.png",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "seriesmetro",
       "name": "SeriesMetro",
-      "filename": "providers/seriesmetro.js"
+      "description": "Series y películas en español latino desde SeriesMetro",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/seriesmetro.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://www3.seriesmetro.net/wp-content/uploads/2024/04/cropped-Favicon2-180x180.png",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "cinecalidad",
       "name": "Cinecalidad",
-      "filename": "providers/cinecalidad.js"
+      "description": "Películas en HD (Latino) desde Cinecalidad",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie"],
+      "filename": "providers/cinecalidad.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://cinecalidad.fun/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "cuevana",
       "name": "Cuevana",
-      "filename": "providers/cuevana.js"
+      "description": "Películas y series en español latino desde Cuevana",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/cuevana.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://cuevana3.ch/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "animeyt",
       "name": "AnimeYT",
-      "filename": "providers/animeyt.js"
+      "description": "Anime variado con doblaje latino y subtítulos",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/animeyt.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://animeyt.es/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     },
     {
       "id": "pelisplus",
       "name": "PelisPlus",
-      "filename": "providers/pelisplus.js"
+      "description": "Catálogo completo de películas y series en latino",
+      "version": "1.0.0",
+      "author": "Rem Provedor ♡",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/pelisplus.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://pelisplus.to/favicon.ico",
+      "contentLanguage": ["es"],
+      "limited": false,
+      "supportsExternalPlayer": true
     }
   ]
 }
