@@ -1,59 +1,72 @@
-function getStreams(tmdbId, type, title, year, season, episode) {
-    console.log('[SoloLatino] Buscando:', title);
-    const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://sololatino.net/',
-    };
+// providers/sololatino.js
+export const name = 'SoloLatino';
 
-    const searchUrl = `https://sololatino.net/buscar?q=${encodeURIComponent(title)}`;
+const BASE = 'https://sololatino.net';
+const HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Referer': `${BASE}/`,
+};
 
-    return fetch(searchUrl, { headers })
-        .then(response => response.text())
-        .then(html => {
-            const match = html.match(/<a\s+href="(\/ver\/[^"]+)"/);
-            if (!match) return [];
-            const href = match[1];
-            const contentIdMatch = href.match(/\/(\d+)-/);
-            if (!contentIdMatch) return [];
-            const contentId = contentIdMatch[1];
-
-            if (type === 'series') {
-                const episodeUrl = `https://sololatino.net/ver/serie/${contentId}-${title.replace(/ /g, '-')}?temporada=${season}&capitulo=${episode}`;
-                return fetch(episodeUrl, { headers })
-                    .then(res => res.text())
-                    .then(epHtml => {
-                        const iframeMatch = epHtml.match(/<iframe[^>]*allowfullscreen[^>]*src="([^"]+)"/);
-                        if (iframeMatch) {
-                            return [{
-                                name: `SoloLatino - T${season}E${episode}`,
-                                url: iframeMatch[1],
-                                quality: 'HD'
-                            }];
-                        }
-                        return [];
-                    });
-            } else if (type === 'movie') {
-                const movieUrl = `https://sololatino.net/ver/pelicula/${contentId}-${title.replace(/ /g, '-')}`;
-                return fetch(movieUrl, { headers })
-                    .then(res => res.text())
-                    .then(movieHtml => {
-                        const iframeMatch = movieHtml.match(/<iframe[^>]*allowfullscreen[^>]*src="([^"]+)"/);
-                        if (iframeMatch) {
-                            return [{
-                                name: 'SoloLatino - Película',
-                                url: iframeMatch[1],
-                                quality: 'HD'
-                            }];
-                        }
-                        return [];
-                    });
-            }
-            return [];
-        })
-        .catch(error => {
-            console.error('[SoloLatino] Error:', error.message);
-            return [];
-        });
+function slugify(title) {
+    return title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-module.exports = { getStreams };
+function extractVideo(html) {
+    // SoloLatino usa iframes con allowfullscreen
+    return html.match(/<iframe[^>]*allowfullscreen[^>]*src="([^"]+)"/)?.[1]
+        || html.match(/<iframe[^>]*src="([^"]+)"[^>]*allowfullscreen/)?.[1]
+        || html.match(/file\s*:\s*"([^"]+\.m3u8)"/)?.[1]
+        || html.match(/<source[^>]+src="([^"]+\.mp4[^"]*)"/)?.[1]
+        || null;
+}
+
+export async function getStreams(tmdbId, mediaType, season, episode, meta = {}) {
+    const { title } = meta;
+    if (!title) {
+        console.warn('[SoloLatino] Sin título, abortando');
+        return [];
+    }
+
+    try {
+        // 1. Buscar contenido
+        const searchHtml = await fetch(`${BASE}/buscar?q=${encodeURIComponent(title)}`, { headers: HEADERS }).then(r => r.text());
+        const href = searchHtml.match(/<a\s+href="(\/ver\/[^"]+)"/)?.[1];
+        if (!href) {
+            console.warn(`[SoloLatino] Sin resultados para: ${title}`);
+            return [];
+        }
+
+        const contentId = href.match(/\/(\d+)-/)?.[1];
+        if (!contentId) {
+            console.warn('[SoloLatino] No se pudo extraer contentId');
+            return [];
+        }
+
+        const titleSlug = slugify(title);
+
+        // 2. Construir URL según tipo
+        let targetUrl;
+        if (mediaType === 'tv') {
+            targetUrl = `${BASE}/ver/serie/${contentId}-${titleSlug}?temporada=${season}&capitulo=${episode}`;
+        } else {
+            targetUrl = `${BASE}/ver/pelicula/${contentId}-${titleSlug}`;
+        }
+
+        const pageHtml = await fetch(targetUrl, { headers: HEADERS }).then(r => r.text());
+        const videoUrl = extractVideo(pageHtml);
+        if (!videoUrl) {
+            console.warn('[SoloLatino] No se encontró URL de video');
+            return [];
+        }
+
+        const streamName = mediaType === 'tv'
+            ? `SoloLatino · T${season}E${episode}`
+            : `SoloLatino · Película`;
+
+        return [{ name: streamName, url: videoUrl, quality: 'HD' }];
+
+    } catch (err) {
+        console.error('[SoloLatino] Error:', err.message);
+        return [];
+    }
+}
