@@ -1,5 +1,4 @@
 function getStreams(tmdbId, type, title, year, season, episode) {
-    console.log('[AnimeAV1] Buscando:', title);
     const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Referer': 'https://animeav1.com/',
@@ -10,7 +9,6 @@ function getStreams(tmdbId, type, title, year, season, episode) {
     return fetch(searchUrl, { headers })
         .then(response => response.text())
         .then(html => {
-            // Extraer la URL del primer resultado usando una expresión regular simple
             const match = html.match(/<article[^>]*>.*?<a\s+href="([^"]+)"/s);
             if (!match) return [];
             const animeUrl = match[1];
@@ -18,7 +16,6 @@ function getStreams(tmdbId, type, title, year, season, episode) {
             return fetch(`https://animeav1.com${animeUrl}`, { headers })
                 .then(res => res.text())
                 .then(animeHtml => {
-                    // Extraer slug y número de episodios
                     const slugMatch = animeHtml.match(/slug:"([^"]+)"/);
                     const episodesMatch = animeHtml.match(/episodesCount:(\d+)/);
                     if (!slugMatch || !episodesMatch) return [];
@@ -32,12 +29,10 @@ function getStreams(tmdbId, type, title, year, season, episode) {
                             .then(res => res.text())
                             .then(epHtml => {
                                 let videoSrc = null;
-                                // Buscar en <video source>
                                 const srcMatch = epHtml.match(/<video[^>]*>.*?<source\s+src="([^"]+)"/s);
                                 if (srcMatch) {
                                     videoSrc = srcMatch[1];
                                 } else {
-                                    // Buscar en scripts
                                     const fileMatch = epHtml.match(/file:"([^"]+\.m3u8)"/);
                                     if (fileMatch) videoSrc = fileMatch[1];
                                 }
