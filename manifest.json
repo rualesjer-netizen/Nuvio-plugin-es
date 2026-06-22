@@ -5,90 +5,122 @@
     {
       "id": "animeav1",
       "name": "AnimeAV1",
+      "description": "Contenido de anime en alta definición.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/animeav1.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "animeflv",
       "name": "AnimeFLV",
+      "description": "El mayor catálogo de anime en español.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/animeflv.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "animejl",
       "name": "AnimeJL",
+      "description": "Anime y doramas en latino.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/animejl.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "latanime",
       "name": "LatAnime",
+      "description": "Anime enfocado en público latinoamericano.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/latanime.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "sololatino",
       "name": "SoloLatino",
+      "description": "Streaming de alta calidad en español latino.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/sololatino.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "seriesmetro",
       "name": "SeriesMetro",
+      "description": "Series completas y estrenos en español.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/seriesmetro.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "cinecalidad",
       "name": "Cinecalidad",
+      "description": "Películas en HD con audio latino.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie"],
       "filename": "providers/cinecalidad.js",
       "enabled": true,
-      "supportedTypes": ["movie"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "cuevana",
       "name": "Cuevana",
+      "description": "El clásico para ver estrenos en línea.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/cuevana.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "animeyt",
       "name": "AnimeYT",
+      "description": "Streaming rápido de anime.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/animeyt.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     },
     {
       "id": "pelisplus",
       "name": "PelisPlus",
+      "description": "Películas y series en español.",
+      "version": "1.0.0",
+      "author": "Rem",
+      "supportedTypes": ["movie", "tv"],
       "filename": "providers/pelisplus.js",
       "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "1.0.0"
-    },
-    {
-      "id": "embed69",
-      "name": "Embed69",
-      "filename": "providers/embed69.js",
-      "enabled": true,
-      "supportedTypes": ["movie", "tv"],
-      "version": "3.0.0"
+      "contentLanguage": ["es"],
+      "formats": ["m3u8", "mp4"]
     }
   ]
 }
