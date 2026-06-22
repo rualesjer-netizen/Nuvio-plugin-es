@@ -82,5 +82,13 @@
       "supportedTypes": ["movie", "tv"],
       "version": "1.0.0"
     }
-  ]
-}
+    {
+     "id": "embed69",
+      "name": "Embed69",
+      "description": "Películas y series vía embed69.org",
+      "version": "3.0.0",
+      "author": "latinokodi",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      } 
