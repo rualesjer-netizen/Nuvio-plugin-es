@@ -81,12 +81,14 @@
       "enabled": true,
       "supportedTypes": ["movie", "tv"],
       "version": "1.0.0"
-    }
+    },
     {
-     "id": "embed69",
+      "id": "embed69",
       "name": "Embed69",
-      "filename": "providers/embed69.js"
+      "filename": "providers/embed69.js",
       "enabled": true,
-      "supportedTypes": ["movie","tv"],
-      "version": "1.0.0"
-      } 
+      "supportedTypes": ["movie", "tv"],
+      "version": "3.0.0"
+    }
+  ]
+}
