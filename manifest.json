@@ -1,5 +1,5 @@
 {
-  "name": "Rem Provedor ♡",
+  "name": "Rem Provider ♡",
   "version": "1.0.0",
   "scrapers": [
     {
@@ -12,7 +12,14 @@
       "filename": "providers/animeav1.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://animeav1.com/*",
+        "https://player.zilla-networks.com/*",
+        "https://www.mp4upload.com/*",
+        "https://*.uns.bio/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "animeflv",
@@ -24,7 +31,12 @@
       "filename": "providers/animeflv.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://animeflv.net/*",
+        "https://www.animeflv.net/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "animejl",
@@ -35,8 +47,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/animejl.js",
       "enabled": true,
-      "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "contentLanguage": ["es"],      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://anime-jl.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "latanime",
@@ -48,7 +63,11 @@
       "filename": "providers/latanime.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://latanime.org/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "embed69",
@@ -61,7 +80,11 @@
       "enabled": true,
       "logo": "https://play-lh.googleusercontent.com/5oy8Mdjfj1sEzBWe5WxuQ_8MqFRC6Yu-PM2c4QkXEN_isAQvqrWeMwZV7z3__lDm8Q",
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://embed69.org/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "sololatino",
@@ -73,10 +96,14 @@
       "filename": "providers/sololatino.js",
       "enabled": true,
       "logo": "https://sololatino.net/images/logo.png",
-      "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"],
+      "contentLanguage": ["es"],      "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://sololatino.net/*",
+        "https://player.plus/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "pelisgo",
@@ -91,7 +118,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://pelisgo.online/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "pelisplus",
@@ -106,12 +137,15 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://www.pelisplushd.la/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "hackstore",
-      "name": "HackStore",
-      "description": "API Nativa de Películas en HD",
+      "name": "HackStore",      "description": "API Nativa de Películas en HD",
       "version": "12.9.2",
       "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
@@ -121,7 +155,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://hackstore.mx/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "pelispanda",
@@ -136,7 +174,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://pelispanda.org/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "cinecalidad",
@@ -151,7 +193,12 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [        "https://cinecalidad.to/*",
+        "https://voe.sx/*",
+        "https://filemoon.sx/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "seriesmetro",
@@ -166,7 +213,12 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://www3.seriesmetro.net/*",
+        "https://fastream.to/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "xupalace",
@@ -181,14 +233,17 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://xupalace.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "fuegocine",
       "name": "FuegoCine",
       "description": "Películas y series con enlaces directos y alta velocidad.",
-      "version": "7.0.3",
-      "author": "latinokodi",
+      "version": "7.0.3",      "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/fuegocine.js",
       "enabled": true,
@@ -196,7 +251,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://www.fuegocine.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "playhubmax",
@@ -211,7 +270,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://playhubmax.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "tioplus",
@@ -226,7 +289,10 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://tioplus.app/*",
+        "https://api.themoviedb.org/*"      ]
     },
     {
       "id": "cinemacity",
@@ -241,7 +307,11 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": false
+      "supportsExternalPlayer": false,
+      "permissions": [
+        "https://cinemacity.cc/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "brazucaplay",
@@ -256,7 +326,12 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://brazucaplay.com/*",
+        "https://cuevana3.io/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "lamovie",
@@ -266,12 +341,25 @@
       "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/lamovie.js",
-      "enabled": true,
-      "logo": "https://lamovie.cc/img/favicon.png",
+      "enabled": true,      "logo": "https://lamovie.cc/img/favicon.png",
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://lamovie.cc/*",
+        "https://la.movie/*",
+        "https://hlswish.com/*",
+        "https://streamwish.com/*",
+        "https://voe.sx/*",
+        "https://vimeos.net/*",
+        "https://lacloud.live/*",
+        "https://doodstream.com/*",
+        "https://d0000d.com/*",
+        "https://earnvids.com/*",
+        "https://hglink.to/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "videasy",
@@ -286,7 +374,13 @@
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://player.videasy.net/*",
+        "https://onionplay.se/*",
+        "https://cuevana3.io/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "cuevanaubd",
@@ -296,12 +390,15 @@
       "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/cuevana.js",
-      "enabled": true,
-      "logo": "https://i.postimg.cc/4dJGhTmW/Gemini-Generated-Image-w81fzfw81fzfw81f.png",
+      "enabled": true,      "logo": "https://i.postimg.cc/4dJGhTmW/Gemini-Generated-Image-w81fzfw81fzfw81f.png",
       "contentLanguage": ["es"],
       "formats": ["m3u8", "mp4"],
       "limited": false,
-      "supportsExternalPlayer": true
+      "supportsExternalPlayer": true,
+      "permissions": [
+        "https://cuevana3.io/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "doramasflix",
@@ -313,7 +410,11 @@
       "filename": "providers/doramasflix.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://doramasflix.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "vimeus",
@@ -325,7 +426,11 @@
       "filename": "providers/vimeus.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "formats": ["m3u8", "mp4"]
+      "formats": ["m3u8", "mp4"],
+      "permissions": [
+        "https://vimeus.net/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "zoowomaniacos",
@@ -334,9 +439,12 @@
       "version": "2.0.0",
       "author": "latinokodi",
       "supportedTypes": ["movie"],
-      "filename": "providers/zoowomaniacos.js",
-      "enabled": true,
-      "contentLanguage": ["es"]
+      "filename": "providers/zoowomaniacos.js",      "enabled": true,
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://zoowomaniacos.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "peliserieshoy",
@@ -347,7 +455,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/peliserieshoy.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://peliserieshoy.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "areshd",
@@ -358,7 +470,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/areshd.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://areshd.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "seriesflix",
@@ -369,7 +485,10 @@
       "supportedTypes": ["tv"],
       "filename": "providers/seriesflix.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://seriesflixhd.com/*",
+        "https://api.themoviedb.org/*"      ]
     },
     {
       "id": "cinemitas",
@@ -380,7 +499,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/cinemitas.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://cinemitas.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "vitaminagg",
@@ -391,7 +514,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/vitaminagg.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://vitaminagg.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "tioanime",
@@ -402,18 +529,25 @@
       "supportedTypes": ["tv"],
       "filename": "providers/tioanime.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://tioanime.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "repelishd",
-      "name": "RepelisHD",
-      "description": "Películas y series desde RepelisHD.",
+      "name": "RepelisHD",      "description": "Películas y series desde RepelisHD.",
       "version": "1.0.0",
       "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/repelishd.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://repelishd.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "cine24h",
@@ -424,7 +558,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/cine24h.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://cine24h.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "peliculasflix",
@@ -435,7 +573,11 @@
       "supportedTypes": ["movie"],
       "filename": "providers/peliculasflix.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://peliculasflix.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "pelisgratishd",
@@ -444,9 +586,12 @@
       "version": "1.0.0",
       "author": "latinokodi",
       "supportedTypes": ["movie", "tv"],
-      "filename": "providers/pelisgratishd.js",
-      "enabled": true,
-      "contentLanguage": ["es"]
+      "filename": "providers/pelisgratishd.js",      "enabled": true,
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://pelisgratishd.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "veronline",
@@ -457,7 +602,11 @@
       "supportedTypes": ["tv"],
       "filename": "providers/veronline.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://veronline.tv/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "detodopeliculas",
@@ -468,7 +617,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/detodopeliculas.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://detodopeliculas.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "gnula",
@@ -479,7 +632,10 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/gnula.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://gnula.nu/*",
+        "https://api.themoviedb.org/*"      ]
     },
     {
       "id": "seriesgato",
@@ -490,7 +646,12 @@
       "supportedTypes": ["tv"],
       "filename": "providers/seriesgato.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://seriesgato.com/*",
+        "https://gatonplayseries.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "seriespapaya",
@@ -501,7 +662,12 @@
       "supportedTypes": ["tv"],
       "filename": "providers/seriespapaya.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://seriespapaya.com/*",
+        "https://magistv24.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "zonaleros",
@@ -513,9 +679,12 @@
       "filename": "providers/zonaleros.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "logo": "https://zona-leros.com/favicon.ico"
-    },
-    {
+      "logo": "https://zona-leros.com/favicon.ico",
+      "permissions": [
+        "https://zona-leros.com/*",
+        "https://api.themoviedb.org/*"
+      ]
+    },    {
       "id": "verpelis",
       "name": "VerPelis",
       "description": "Películas y series actuales de verpelis.gratis.",
@@ -525,7 +694,11 @@
       "filename": "providers/verpelis.js",
       "enabled": true,
       "contentLanguage": ["es"],
-      "logo": "https://verpelis.gratis/favicon.ico"
+      "logo": "https://verpelis.gratis/favicon.ico",
+      "permissions": [
+        "https://verpelis.gratis/*",
+        "https://api.themoviedb.org/*"
+      ]
     },
     {
       "id": "pelispedia",
@@ -536,7 +709,11 @@
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/pelispedia.js",
       "enabled": true,
-      "contentLanguage": ["es"]
+      "contentLanguage": ["es"],
+      "permissions": [
+        "https://pelispedia.com/*",
+        "https://api.themoviedb.org/*"
+      ]
     }
   ]
     }
