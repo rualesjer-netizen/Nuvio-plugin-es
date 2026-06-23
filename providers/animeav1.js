@@ -1,150 +1,161 @@
-// providers/animeav1.js
-export const name = 'AnimeAV1';
-
 const BASE = 'https://animeav1.com';
+const TMDB_KEY = '439c478a771f35c05022f9feabcca01c';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-const HEADERS = { 'User-Agent': UA, 'Referer': `${BASE}/` };
+const HEADERS = { 'User-Agent': UA, 'Referer': BASE + '/' };
 
-// AES-CBC decrypt (para UPNS)
-async function decryptAES(inputHex, key, iv) {
-    const keyBytes = new TextEncoder().encode(key);
-    const ivBytes = new TextEncoder().encode(iv);
-    const data = new Uint8Array(inputHex.match(/.{2}/g).map(b => parseInt(b, 16)));
-    const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']);
-    const decrypted = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: ivBytes }, cryptoKey, data);
-    return new TextDecoder().decode(decrypted);
-}
-
-// Resolver: PlayerZilla — /m3u8/{id}
-async function resolvePlayerZilla(url) {
-    try {
-        const id = url.split('/').pop();
-        const m3u8 = `https://player.zilla-networks.com/m3u8/${id}`;
-        return { url: m3u8, quality: '1080p', headers: { 'Referer': url, 'User-Agent': UA } };
-    } catch { return null; }
-}
-
-// Resolver: UPNS — API con AES decrypt
-async function resolveUPNS(url) {
-    try {
-        const hash = url.split('#').pop().split('/').pop();
-        const base = url.split('/').slice(0, 3).join('/');
-        const encoded = await fetch(`${base}/api/v1/video?id=${hash}`, { headers: { 'User-Agent': UA } }).then(r => r.text());
-        const ivList = ['1234567890oiuytr', '0123456789abcdef'];
-        let decrypted = null;
-        for (const iv of ivList) {
-            try { decrypted = await decryptAES(encoded.trim(), 'kiemtienmua911ca', iv); break; } catch { }
-        }
-        if (!decrypted) return null;
-        const m3u8 = decrypted.match(/"source":"([^"]+)"/)?.[1]?.replace(/\\\//g, '/');
-        if (!m3u8) return null;
-        return { url: m3u8, quality: '1080p', headers: { 'Referer': url, 'User-Agent': UA } };
-    } catch { return null; }
-}
-
-// Resolver: Mp4Upload — unpack + player.src
-async function resolveMp4Upload(url) {
-    try {
-        const idMatch = url.match(/mp4upload\.com\/(embed-|)([A-Za-z0-9]*)/);
-        const realUrl = idMatch ? `https://www.mp4upload.com/embed-${idMatch[2]}.html` : url;
-        const html = await fetch(realUrl, { headers: { 'Referer': url, 'User-Agent': UA } }).then(r => r.text());
-        // Unpack p,a,c,k,e,d
-        const packed = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]+?\.split\('\|'\)\)\)/)?.[0];
-        let unpacked = packed ? unpack(packed) : html;
-        const mp4 = unpacked.match(/player\.src\("([^"]+)"/)?.[1]
-            || unpacked.match(/player\.src\([\s\S]*?src:\s*"([^"]+)"/)?.[1];
-        if (!mp4) return null;
-        return { url: mp4, quality: '1080p', headers: { 'Referer': realUrl, 'User-Agent': UA } };
-    } catch { return null; }
-}
+// Sufijos de temporada que usa AnimeAV1
+var SEASON_SUFFIXES = ['', ' II', ' III', ' IV', ' V', ' VI', ' VII', ' VIII', ' IX', ' X'];
 
 function unpack(packed) {
-    try {
-        const m = packed.match(/\('([\s\S]+?)',(\d+),(\d+),'([\s\S]+?)'\.split\('\|'\)\)/);
-        if (!m) return packed;
-        let [, p, a, c, k] = m;
-        a = parseInt(a); k = k.split('|');
-        const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const enc = (i, b) => i < b ? alphabet[i] : enc(Math.floor(i / b), b) + alphabet[i % b];
-        for (let i = parseInt(c) - 1; i >= 0; i--) {
-            if (k[i]) p = p.replace(new RegExp('\\b' + enc(i, a) + '\\b', 'g'), k[i]);
-        }
-        return p;
-    } catch { return packed; }
-}
-
-async function resolveEmbed(url) {
-    if (!url) return null;
-    const s = url.toLowerCase();
-    if (s.includes('zilla-networks.com')) return await resolvePlayerZilla(url);
-    if (s.includes('uns.bio') || s.includes('upns')) return await resolveUPNS(url);
-    if (s.includes('mp4upload.com')) return await resolveMp4Upload(url);
-    // Fallback genérico
-    try {
-        const html = await fetch(url, { headers: { 'Referer': BASE, 'User-Agent': UA } }).then(r => r.text());
-        const m3u8 = html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/i)?.[1];
-        if (m3u8) return { url: m3u8, quality: 'HD', headers: { 'Referer': url, 'User-Agent': UA } };
-        const mp4 = html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/i)?.[1];
-        if (mp4) return { url: mp4, quality: 'HD', headers: { 'Referer': url, 'User-Agent': UA } };
-    } catch { }
-    return null;
-}
-
-export async function getStreams(tmdbId, mediaType, season, episode, meta = {}) {
-    const { title } = meta;
-    if (!title) { console.warn('[AnimeAV1] Sin título'); return []; }
-
-    episode = parseInt(episode) || 1;
-
-    try {
-        // 1. Buscar anime
-        const searchHtml = await fetch(`${BASE}/catalogo?search=${encodeURIComponent(title)}`, { headers: HEADERS }).then(r => r.text());
-        const animePath = searchHtml.match(/href="(\/media\/[^"]+)"/)?.[1];
-        if (!animePath) { console.warn(`[AnimeAV1] Sin resultados para: ${title}`); return []; }
-
-        // 2. Construir URL del episodio
-        // AnimeAV1 no maneja temporadas — solo número de episodio global
-        const epUrl = mediaType === 'tv' ? `${BASE}${animePath}/${episode}` : `${BASE}${animePath}`;
-
-        // 3. Cargar página del episodio y extraer embeds del script svelte
-        const epHtml = await fetch(epUrl, { headers: HEADERS }).then(r => r.text());
-        const script = epHtml.match(/script:containsData\(__sveltekit\)/) 
-            ? '' 
-            : epHtml.match(/<script[^>]*>([\s\S]*?__sveltekit[\s\S]*?)<\/script>/)?.[1] || '';
-
-        // Extraer embeds: {server:"X", url:"Y"} dentro de DUB y SUB
-        const embedsData = script.match(/embeds:\{([\s\S]*?)\},downloads/)?.[1] || '';
-        const embedMatches = [...(embedsData || epHtml).matchAll(/\{server:"([^"]+)",\s*url:"([^"]+)"/g)];
-
-        if (embedMatches.length === 0) { console.warn('[AnimeAV1] Sin embeds en:', epUrl); return []; }
-
-        // 4. Resolver cada embed
-        const streams = [];
-        await Promise.all(embedMatches.map(async ([, server, rawUrl]) => {
-            try {
-                let url = rawUrl.startsWith('//') ? `https:${rawUrl}` : rawUrl;
-                if (!url.startsWith('http')) return;
-
-                const resolved = await resolveEmbed(url);
-                if (!resolved?.url) return;
-
-                const streamName = mediaType === 'tv'
-                    ? `AnimeAV1 · E${episode} - ${server}`
-                    : `AnimeAV1 · Película - ${server}`;
-
-                streams.push({
-                    name: streamName,
-                    url: resolved.url,
-                    quality: resolved.quality || 'HD',
-                    headers: resolved.headers || HEADERS,
-                });
-            } catch { }
-        }));
-
-        return streams;
-
-    } catch (err) {
-        console.error('[AnimeAV1] Error:', err.message);
-        return [];
+    var m = packed.match(/\('([\s\S]+?)',(\d+),(\d+),'([\s\S]+?)'\.split\('\|'\)\)/);
+    if (!m) return packed;
+    var p = m[1], a = parseInt(m[2]), k = m[4].split('|');
+    var alpha = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    function enc(i, b) { return i < b ? alpha[i] : enc(Math.floor(i / b), b) + alpha[i % b]; }
+    for (var i = k.length - 1; i >= 0; i--) {
+        if (k[i]) p = p.replace(new RegExp('\\b' + enc(i, a) + '\\b', 'g'), k[i]);
     }
+    return p;
 }
+
+function resolvePlayerZilla(url) {
+    var id = url.split('/').pop();
+    return Promise.resolve({
+        url: 'https://player.zilla-networks.com/m3u8/' + id,
+        quality: '1080p',
+        headers: { 'Referer': url, 'User-Agent': UA }
+    });
+}
+
+function resolveMp4Upload(url) {
+    var idMatch = url.match(/mp4upload\.com\/(embed-|)([A-Za-z0-9]*)/);
+    var realUrl = idMatch ? 'https://www.mp4upload.com/embed-' + idMatch[2] + '.html' : url;
+    return fetch(realUrl, { headers: { 'Referer': url, 'User-Agent': UA } })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var packed = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]+?\.split\('\|'\)\)\)/);
+            var text = packed ? unpack(packed[0]) : html;
+            var mp4 = text.match(/player\.src\("([^"]+)"/) || text.match(/player\.src\([\s\S]*?src:\s*"([^"]+)"/);
+            if (!mp4) return null;
+            return { url: mp4[1], quality: '1080p', headers: { 'Referer': realUrl, 'User-Agent': UA } };
+        })
+        .catch(function() { return null; });
+}
+
+function resolveGeneric(url) {
+    return fetch(url, { headers: { 'Referer': BASE + '/', 'User-Agent': UA } })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var m3u8 = html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/i);
+            if (m3u8) return { url: m3u8[1], quality: 'HD', headers: { 'Referer': url, 'User-Agent': UA } };
+            var mp4 = html.match(/(https?:\/\/[^"'\s]+\.mp4[^"'\s]*)/i);
+            if (mp4) return { url: mp4[1], quality: 'HD', headers: { 'Referer': url, 'User-Agent': UA } };
+            return null;
+        })
+        .catch(function() { return null; });
+}
+
+function resolveEmbed(url) {
+    if (!url) return Promise.resolve(null);
+    var s = url.toLowerCase();
+    if (s.includes('zilla-networks.com')) return resolvePlayerZilla(url);
+    if (s.includes('mp4upload.com')) return resolveMp4Upload(url);
+    return resolveGeneric(url);
+}
+
+function getTitle(tmdbId, mediaType) {
+    var type = mediaType === 'movie' ? 'movie' : 'tv';
+    return fetch('https://api.themoviedb.org/3/' + type + '/' + tmdbId + '?api_key=' + TMDB_KEY + '&language=es-MX', { headers: { 'User-Agent': UA } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) { return data.title || data.name || null; })
+        .catch(function() { return null; });
+}
+
+function searchAnime(query) {
+    return fetch(BASE + '/catalogo?search=' + encodeURIComponent(query), { headers: HEADERS })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var m = html.match(/href="(\/media\/[^"]+)"/);
+            return m ? m[1] : null;
+        })
+        .catch(function() { return null; });
+}
+
+function getEpisodeStreams(epUrl, seasonLabel, epNum) {
+    return fetch(epUrl, { headers: HEADERS })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var embedsMatch = html.match(/embeds:\{([\s\S]*?)\},downloads/);
+            var searchIn = embedsMatch ? embedsMatch[1] : html;
+            var matches = [];
+            var re = /\{server:"([^"]+)",\s*url:"([^"]+)"/g;
+            var m;
+            while ((m = re.exec(searchIn)) !== null) {
+                matches.push({ server: m[1], url: m[2] });
+            }
+            return Promise.all(matches.map(function(embed) {
+                var url = embed.url.startsWith('//') ? 'https:' + embed.url : embed.url;
+                if (!url.startsWith('http')) return null;
+                return resolveEmbed(url)
+                    .then(function(resolved) {
+                        if (!resolved) return null;
+                        return {
+                            name: 'AnimeAV1',
+                            title: seasonLabel + ' Ep. ' + epNum + ' - ' + embed.server,
+                            url: resolved.url,
+                            quality: resolved.quality || 'HD',
+                            headers: resolved.headers || HEADERS
+                        };
+                    })
+                    .catch(function() { return null; });
+            }))
+            .then(function(results) {
+                return results.filter(function(r) { return r !== null; });
+            });
+        })
+        .catch(function() { return []; });
+}
+
+function getStreams(tmdbId, mediaType, season, episode) {
+    var seasonNum = parseInt(season) || 1;
+    var epNum = parseInt(episode) || 1;
+    var suffix = SEASON_SUFFIXES[seasonNum - 1] || (' ' + seasonNum);
+
+    return getTitle(tmdbId, mediaType)
+        .then(function(baseTitle) {
+            if (!baseTitle) {
+                console.warn('[AnimeAV1] No se pudo obtener título para: ' + tmdbId);
+                return [];
+            }
+
+            // Para T1 buscar "Date A Live", para T2 "Date A Live II", etc.
+            var searchTitle = baseTitle + suffix;
+            console.log('[AnimeAV1] Buscando: ' + searchTitle);
+
+            return searchAnime(searchTitle)
+                .then(function(animePath) {
+                    // Si no encuentra con sufijo, intentar con título base (para T1)
+                    if (!animePath && seasonNum === 1) {
+                        return searchAnime(baseTitle);
+                    }
+                    return animePath;
+                })
+                .then(function(animePath) {
+                    if (!animePath) {
+                        console.warn('[AnimeAV1] Sin resultados para: ' + searchTitle);
+                        return [];
+                    }
+                    var epUrl = mediaType === 'tv'
+                        ? BASE + animePath + '/' + epNum
+                        : BASE + animePath;
+                    var seasonLabel = baseTitle + (suffix || '');
+                    return getEpisodeStreams(epUrl, seasonLabel, epNum);
+                });
+        })
+        .catch(function(err) {
+            console.error('[AnimeAV1] Error: ' + err.message);
+            return [];
+        });
+}
+
+module.exports = { getStreams };
